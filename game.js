@@ -1,18 +1,5 @@
 // Minesweeper Phaser 3 Game
-const config = {
-    type: Phaser.AUTO,
-    parent: 'game-container',
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 720,
-        height: 960,
-        expandParent: true
-    },
-    scene: MinesweeperScene
-};
-
-const game = new Phaser.Game(config);
+// NOTE: MinesweeperScene class is defined below; game is instantiated at the bottom of the file.
 
 class MinesweeperScene extends Phaser.Scene {
     constructor() {
@@ -289,6 +276,12 @@ class MinesweeperScene extends Phaser.Scene {
     }
 
     draw() {
+        // Destroy old text objects before redraw
+        if (this.textObjects) {
+            this.textObjects.forEach(t => t.destroy());
+        }
+        this.textObjects = [];
+
         // Clear previous graphics
         if (this.gridGraphics) this.gridGraphics.destroy();
         if (this.uiGraphics) this.uiGraphics.destroy();
@@ -392,11 +385,11 @@ class MinesweeperScene extends Phaser.Scene {
 
         // Flag
         graphics.fillStyle(0xFFFF00);
-        graphics.fillTriangleShape([
-            { x: centerX, y: centerY - 8 },
-            { x: centerX + 10, y: centerY - 4 },
-            { x: centerX, y: centerY }
-        ]);
+        graphics.fillTriangle(
+            centerX, centerY - 8,
+            centerX + 10, centerY - 4,
+            centerX, centerY
+        );
     }
 
     drawNumber(graphics, x, y, number) {
@@ -631,3 +624,19 @@ class MinesweeperScene extends Phaser.Scene {
         });
     }
 }
+
+// Instantiate after class definition to avoid ReferenceError (classes are not hoisted)
+const config = {
+    type: Phaser.AUTO,
+    parent: 'game-container',
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 720,
+        height: 960,
+        expandParent: true
+    },
+    scene: MinesweeperScene
+};
+
+const game = new Phaser.Game(config);
